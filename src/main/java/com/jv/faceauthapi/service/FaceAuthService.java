@@ -34,12 +34,7 @@ public class FaceAuthService {
 
         uploadToBucket(photo, false);
 
-        try {
-            rekognitionclient.createCollection(new CreateCollectionRequest()
-                    .withCollectionId(COLLECTION_ID));
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+
 
         rekognitionclient.indexFaces(new IndexFacesRequest()
                 .withImage(new Image()
