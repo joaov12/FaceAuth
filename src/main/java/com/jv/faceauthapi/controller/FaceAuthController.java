@@ -20,9 +20,9 @@ public class FaceAuthController {
     private FaceAuthService faceAuthService;
 
     @PostMapping(value = "sendPhoto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> sendPhoto(@RequestPart(value = "photo")MultipartFile photo) throws Exception{
+    public ResponseEntity<?> sendPhoto(@RequestPart(value = "photo")MultipartFile photo) throws Exception{
         faceAuthService.savePhotoinS3(photo);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body("IMAGEM ENVIADA AO BUCKET DO S3 COM SUCESSO!");
     }
 
     @PostMapping(value = "/byface", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
