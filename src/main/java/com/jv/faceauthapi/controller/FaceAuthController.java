@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("auth")
-@Tag(name="Autenticação")
+@Tag(name="Authenticate")
 public class FaceAuthController {
 
     @Autowired

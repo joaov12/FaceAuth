@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("register")
-@Tag(name="Registro")
+@Tag(name="Register")
 public class RegisterController {
     @Autowired
     private FaceAuthService faceAuthService;
@@ -23,7 +23,7 @@ public class RegisterController {
     @Operation(summary = "Upload para o s3", description = "Faz o upload de uma imagem para um bucket do Amazon s3")
     @PostMapping(value = "registerUserPhoto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> sendPhoto(@RequestPart(value = "photo") MultipartFile photo) throws Exception{
-        faceAuthService.savePhotoinS3(photo);
+        faceAuthService.savePhotoInS3(photo);
         return ResponseEntity.status(HttpStatus.CREATED).body("IMAGEM ENVIADA AO BUCKET DO S3 COM SUCESSO!");
     }
 }
