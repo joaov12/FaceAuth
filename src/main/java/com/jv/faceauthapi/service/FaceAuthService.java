@@ -19,7 +19,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.Date;
 
 @Service
 public class FaceAuthService {
@@ -30,18 +29,17 @@ public class FaceAuthService {
     @Autowired
     private AmazonRekognition rekognitionclient;
 
-    private static float similiarity = 98L;
+    private static final float MINIMUM_SIMILARITY = 98L;
     private static final String COLLECTION_ID = "photos";
     private static final String BUCKET_NAME = System.getenv("BUCKET_NAME");
 
+
     public void savePhotoinS3(MultipartFile photo) throws Exception {
-        if(!isFace(photo.getBytes())){
+        if(!detectFace(photo.getBytes())){
             throw new NoFaceDetectedException();
         }
 
-        uploadToBucket(photo, false);
-
-
+        uploadPhotoToS3Bucket(photo, false);
 
         rekognitionclient.indexFaces(new IndexFacesRequest()
                 .withImage(new Image()
@@ -53,8 +51,8 @@ public class FaceAuthService {
                 .withDetectionAttributes("ALL"));
     }
 
-    private void uploadToBucket(MultipartFile photo, boolean isTemp) throws Exception {
-        String fileName = isTemp ? photo.getOriginalFilename() + "temp" : photo.getOriginalFilename();
+    private void uploadPhotoToS3Bucket(MultipartFile photo, boolean tempPhoto) throws Exception {
+        String fileName = tempPhoto ? photo.getOriginalFilename() + "temp" : photo.getOriginalFilename();
 
         File file = new File(Objects.requireNonNull(fileName));
         try (OutputStream os = new FileOutputStream(file)) {
@@ -62,10 +60,9 @@ public class FaceAuthService {
         }
 
         s3client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, file));
-        file.delete();
     }
 
-    private boolean isFace(byte[] bytes) throws Exception {
+    private boolean detectFace(byte[] bytes){
         DetectFacesRequest request = new DetectFacesRequest()
                 .withImage(new Image().withBytes(ByteBuffer.wrap(bytes)))
                 .withAttributes(Attribute.ALL);
@@ -80,25 +77,25 @@ public class FaceAuthService {
             throw new MultipleFacesDetectedException();
         }
 
-        return result.getFaceDetails().getFirst().getConfidence() > 85;
+        return result.getFaceDetails().getFirst().getConfidence() > MINIMUM_SIMILARITY;
     }
 
-    public ResponseUserDTO getAuthenticationByFace(MultipartFile photo) throws Exception {
-        if(!isFace(photo.getBytes())){
+    public ResponseUserDTO verifyFaceForAuthentication(MultipartFile photo) throws Exception {
+        if(!detectFace(photo.getBytes())){
             throw new NoFaceDetectedException();
         }
 
-        uploadToBucket(photo, true);
+        uploadPhotoToS3Bucket(photo, true);
 
         SearchFacesByImageResult result = rekognitionclient.searchFacesByImage(new SearchFacesByImageRequest()
                 .withCollectionId(COLLECTION_ID)
                 .withImage(new Image()
                         .withS3Object(new com.amazonaws.services.rekognition.model.S3Object()
                                 .withBucket(BUCKET_NAME)
-                                .withName(photo.getOriginalFilename() + "temp")))
-                .withFaceMatchThreshold(similiarity));
+                                .withName(photo.getOriginalFilename() + "temporary")))
+                .withFaceMatchThreshold(MINIMUM_SIMILARITY));
 
-        s3client.deleteObject(new DeleteObjectRequest(BUCKET_NAME, photo.getOriginalFilename() + "temp"));
+        s3client.deleteObject(new DeleteObjectRequest(BUCKET_NAME, photo.getOriginalFilename() + "temporary"));
 
         if (result.getFaceMatches().isEmpty()) {
             throw new FaceNotRegisteredException();
