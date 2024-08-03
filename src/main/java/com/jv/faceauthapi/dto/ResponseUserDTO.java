@@ -8,9 +8,9 @@ public class ResponseUserDTO {
     public ResponseUserDTO() {
     }
 
-    public ResponseUserDTO(float percentageSimilarity, String userName) {
-        this.percentageSimilarity = percentageSimilarity;
-        this.userName = userName;
+    private ResponseUserDTO(Builder builder) {
+        this.userName = builder.userName;
+        this.percentageSimilarity = builder.percentageSimilarity;
     }
 
     public float getPercentageSimilarity() {
@@ -27,5 +27,32 @@ public class ResponseUserDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public static class Builder {
+        private String userName;
+        private float percentageSimilarity;
+
+        public Builder userName(String userName) {
+            this.userName = userName;
+            return this;
+        }
+
+        public Builder percentageSimilarity(float percentageSimilarity) {
+            this.percentageSimilarity = percentageSimilarity;
+            return this;
+        }
+
+        public ResponseUserDTO build() {
+            return new ResponseUserDTO(this);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ResponseUserDTO{" +
+                "userName='" + userName + '\'' +
+                ", percentageSimilarity=" + percentageSimilarity +
+                '}';
     }
 }
