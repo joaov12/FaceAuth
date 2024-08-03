@@ -1,5 +1,6 @@
 package com.jv.faceauthapi.controller;
 
+import com.jv.faceauthapi.dto.ResponseUserDTO;
 import com.jv.faceauthapi.service.FaceAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,5 +23,10 @@ public class FaceAuthController {
     public ResponseEntity<String> sendPhoto(@RequestPart(value = "photo")MultipartFile photo) throws Exception{
         faceAuthService.savePhotoinS3(photo);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/byface", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseUserDTO> getAuthenticationByFace(@RequestPart(value = "photo") MultipartFile photo) throws Exception {
+        return new ResponseEntity<>(faceAuthService.getAuthenticationByFace(photo), HttpStatus.OK);
     }
 }
