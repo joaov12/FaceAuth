@@ -67,4 +67,4 @@ Aplicação de autenticação facial desenvolvida em Java usando Spring Boot e s
 
 **Desenvolvedor**: João Vitor Farias 
 
-**LinkedIn**: [LinkedIn]([https://www.linkedin.com/in/seulinkedin](https://www.linkedin.com/in/jo%C3%A3o-vitor-farias-soares-216870238/))
+**LinkedIn**: [LinkedIn](https://www.linkedin.com/in/jo%C3%A3o-vitor-farias-soares-216870238/)
