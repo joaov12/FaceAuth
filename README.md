@@ -9,7 +9,7 @@ Aplicação de autenticação facial desenvolvida em Java usando Spring Boot e s
 
 <p>
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=java,spring,aws,docker,idea,git" />
+    <img src="https://skillicons.dev/icons?i=java,spring,aws,idea,git" />
   </a>
 </p>
 
